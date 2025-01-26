@@ -1,0 +1,40 @@
+
+#-------------------------------------------
+# GitLab Ci/CD Pipeline Docker to Local Machine
+#
+# Created by Akhmed Musa 2024
+#-------------------------------------------
+stages:
+  - stage_validate
+  - stage_build
+  - finish_job
+
+job_validate:
+  stage: stage_validate
+  script:
+    - echo "---VALIDATE TOOLS---"
+    - docker --version
+
+job_build:
+  stage: stage_build
+  services:
+    - docker:dind
+
+  before_script:
+    - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN My_IP:4567
+
+  script:
+    - echo "---BUILD ---"
+    - docker build -t 192.168.100.14:5000/backend/auto-custom-java .
+    - docker build --platform linux/amd64 -t gitlabdockerbuild:latest .
+    - docker tag gitlabdockerbuild:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$CI_COMMIT_SHORT_SHA
+    - docker tag gitlabdockerbuild:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$CI_COMMIT_BRANCH-latest
+
+    - echo "---BUILD COMPLETED---"
+
+
+finish_job:
+  stage : stage_finish
+  script:
+    - echo "---GitLab CI/CD Completed Successfully---"
