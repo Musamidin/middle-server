@@ -1,0 +1,29 @@
+POST http://localhost:8000/api/login
+Accept: application/json
+
+{
+"username": "musa@cs.kg",
+"password": "Simsim@open3"
+}
+> {%
+    client.global.set("auth_token", response.body.token);
+%}
+
+###
+
+GET http://localhost:8000/api/dashboard
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+###
+
+POST http://localhost:8000/api/store
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+"name":"Test",
+"email":"test@test.ts",
+"phone":"453453453",
+"addresss":"dsfsdfsd, 45"
+}

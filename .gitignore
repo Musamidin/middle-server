@@ -57,3 +57,7 @@
 
 ##### Config
 /config/jwt/*
+
+# IDEA
+/.idea
+/.idea/php.xml
