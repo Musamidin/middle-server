@@ -34,7 +34,7 @@ class AutoController extends AbstractController
         $errors = $this->_validator->validate($request);
 
         if (count($errors) > 0) {
-            return $this->json($this->_errorService->formatValidation($errors));
+            return $this->json($this->_errorService->formatValidation($errors), Response::HTTP_BAD_REQUEST);
         }
         return $this->json($request);
     }
