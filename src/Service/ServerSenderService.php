@@ -8,24 +8,6 @@ use Symfony\Component\DomCrawler\Crawler;
 
  class ServerSenderService
 {
-    /**
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-
-    public function test(): string
-    {
-        return "work";
-    }
-
-    public function main(): string
-    {
-        $data = [];
-        $data['arrival_date'] = '22-01-2025';
-        $response = $this->sendStore($data);
-        $crawler = new Crawler($response->getBody()->getContents());
-        return $crawler->filter('#statement')->text();
-    }
-
     public function headerBuilder($headers): array
     {
         $header = [];
@@ -70,10 +52,13 @@ use Symfony\Component\DomCrawler\Crawler;
         }
     }
 
-    public function sendStore($data): ResponseInterface
+     /**
+      * @throws \GuzzleHttp\Exception\GuzzleException
+      */
+     public function sendStore($data): ResponseInterface
     {
         //$debugFile = fopen('debug.log', 'a');
-        $client = new Client(['timeout'  => 10.0]);
+        $client = new Client(['timeout'  => 10.0, 'verify' => false]);
         $response = $client->get('https://auto.customs.gov.kg/ru');
         $headers = $response->getHeaders();
         $crawler = new Crawler($response->getBody()->getContents());
@@ -83,32 +68,32 @@ use Symfony\Component\DomCrawler\Crawler;
             'headers' => $this->headerBuilder($headers),
             'form_params' => [
                 '_token' => $token,
-                'arrival_date' => $data['arrival_date'],
-                'custom' => '41762101',
-                'vehicle_number' => '01KG198ADL',
-                'vehicle_country' => 'KG',
-                'vehicle_type' => '38',
-                'vehicle_vin_type' => 'vin',
-                'vehicle_vin' => '12345678912345678',
-                'vehicle_brand' => '10',
-                'vehicle_model' => 'SD4544',
+                'arrival_date' => $data->arrival_date,
+                'custom' => $data->custom,
+                'vehicle_number' => $data->vehicle_number,
+                'vehicle_country' => $data->vehicle_country,
+                'vehicle_type' => $data->vehicle_type,
+                'vehicle_vin_type' => $data->vehicle_vin_type,
+                'vehicle_vin' => $data->vehicle_brand,
+                'vehicle_brand' => $data->custom,
+                'vehicle_model' => $data->vehicle_model,
                 'vehicle_photo' => 'sss.jpg',
                 'vehicle_photo' => $this->imageConvert('C:\Users\mus_h\OneDrive\Documents\sss.jpg'),
-                'trailer_number' => '',
-                'trailer_vin_type' => 'vin',
-                'trailer_vin' => '',
-                'trailer_model' => '',
-                'container_number' => '',
-                'last_name' => 'Testov',
-                'first_name' => 'test',
-                'middle_name' => '',
-                'personal_number' => '54556555455',
-                'driver_country' => 'KG',
-                'identity_card_kind' => '50',
-                'doc_series' => 'sd545554',
-                'doc_number' => '4545444',
-                'active_tab' => 'pills-home',
-                'input-option' => 'on',
+                'trailer_number' => $data->trailer_number,
+                'trailer_vin_type' => $data->trailer_vin_type,
+                'trailer_vin' => $data->trailer_vin,
+                'trailer_model' => $data->trailer_model,
+                'container_number' => $data->container_number,
+                'last_name' => $data->last_name,
+                'first_name' => $data->first_name,
+                'middle_name' => $data->middle_name,
+                'personal_number' => $data->personal_number,
+                'driver_country' => $data->driver_country,
+                'identity_card_kind' => $data->identity_card_kind,
+                'doc_series' => $data->doc_series,
+                'doc_number' => $data->doc_number,
+                'active_tab' => $data->active_tab,
+                'input-option' => $data->input_option,
             ],
             //'debug' => true //$debugFile
         ]);
