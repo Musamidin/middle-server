@@ -1,6 +1,7 @@
 <?php
 
 namespace App\DTO;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class StoreDto
@@ -36,9 +37,6 @@ final class StoreDto
     public string $last_name;
 
     #[Assert\NotBlank]
-    public string $vehicle_photo;
-
-    #[Assert\NotBlank]
     public string $first_name;
 
     #[Assert\NotBlank]
@@ -61,9 +59,11 @@ final class StoreDto
 
     public string $active_tab = "pills-home";
 
-    public bool $trailer = false;
+    public string $input_option = "on";
 
-    public bool $container = false;
+    public string $trailer;
+
+    public string $container;
 
     public string $trailer_number;
 
@@ -82,4 +82,8 @@ final class StoreDto
     public string $container_number;
 
     public string $container_country;
+
+    #[Assert\NotBlank(message: "File is required.")]
+    #[Assert\File(maxSize : '1M', mimeTypes: ['image/jpeg', 'image/png'])]
+    public ?File $file;
 }

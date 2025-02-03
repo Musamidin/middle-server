@@ -22,9 +22,9 @@ class AutoController extends AbstractController
     private ServerSenderService $_serverSenderService;
 
     public function __construct(
-        ValidatorInterface $validator,
+        ValidatorInterface    $validator,
         ErrorFormatterService $errorService,
-        ServerSenderService $serverSenderService)
+        ServerSenderService   $serverSenderService)
     {
         $this->_validator = $validator;
         $this->_errorService = $errorService;
@@ -33,19 +33,26 @@ class AutoController extends AbstractController
 
     #[Route('/store', name: 'store', methods: 'POST')]
     public function Store(#[MapRequestPayload(
-        acceptFormat: 'json',
-        validationGroups: ['strict', 'read'],
-        validationFailedStatusCode: Response::HTTP_NOT_FOUND
-    )] StoreDto $request): JsonResponse
+//        acceptFormat: 'multipart/form-data',
+//        validationGroups: ['strict', 'read'],
+        validationFailedStatusCode: Response::HTTP_BAD_REQUEST
+    )] StoreDto $store): JsonResponse
     {
-        $errors = $this->_validator->validate($request);
+        dd($store);
+        $errors = $this->_validator->validate($store);
 
         if (count($errors) > 0) {
             return $this->json($this->_errorService->formatValidation($errors), Response::HTTP_BAD_REQUEST);
         }
-        $response = $this->_serverSenderService->sendStore($request);
-        $crawler = new Crawler($response->getBody()->getContents());
-        $message = $crawler->filter('#statement')->text();
-        return $this->json($message);
+        //dd($this->getUser()->getId());
+        $response = $this->_serverSenderService->sendStore($store);
+        if ($response["statusCode"] == 200) {
+            $crawler = new Crawler($response["content"]);
+            $message = $crawler->filter('#statement')->text();
+            return $this->json($message);
+        }
+
+        return $this->json($response, $response['statusCode']);
     }
 }
+
